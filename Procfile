@@ -1,1 +1,1 @@
-web: gunicorn index:index --log-file -
+web: gunicorn app:index --log-file -

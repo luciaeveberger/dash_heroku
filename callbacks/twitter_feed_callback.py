@@ -10,6 +10,9 @@ from settings import MAPBOX_ACCESS_TOKEN
 
 import plotly.express as px
 
+HEATWAVE_DATA = "DUMMY_DATA/heatwave.json"
+ARCTIC_DATA = "DUMMY_DATA/arctic.json"
+
 colours = px.colors.sequential.Plasma
 tweet_feed = pd.DataFrame(columns=['id_str', 'received_at', 'user', 'text', 'label', 'user_city'])
 
@@ -35,26 +38,36 @@ def clear_data():
 
 def get_streaming_data(prev_filter_term, curr_filter_term):
     dict_json = {"stream_name": curr_filter_term}
-    get_information_from_stream = requests.post(os.path.join(API_HOSTNAME,
-                                                             'get_tweets/get_tweets_based_on_keyword'),
-                                                json=dict_json)
-    stream = json.loads(get_information_from_stream.text)
+    cwd = os.getcwd()
+    DATA = HEATWAVE_DATA
+    
+    if curr_filter_term == 'heatwave':
+        DATA = HEATWAVE_DATA
 
-    for i in range(0, len(stream)):
+    if curr_filter_term == 'arctic':
+        DATA = ARCTIC_DATA
 
-        coordinates = []
-        if stream[i]['tweet']['geolocation']['user_cities']:
-            coordinates.append([stream[i]['tweet']['geolocation']['user_cities'][0]])
-            coordinates.append([stream[i]['tweet']['geolocation']['user_cities'][1]])
-            if stream[i]['tweet']['id_str'] not in tweet_feed.id_str.values:
-                tweet_feed.loc[len(tweet_feed) + i] = [stream[i]['tweet']['id_str'],
-                                                       stream[i]['tweet']['created_at'],
-                                                       stream[i]['tweet']['user']['name'],
-                                                       stream[i]['tweet']['text'],
-                                                       stream[i]['label'],
-                                                       coordinates,
 
-                                                       ]
+    with open(os.path.join(cwd, DATA)) as f:
+
+        get_information_from_stream = json.load(f)
+        stream = get_information_from_stream
+
+        for i in range(0, len(stream)):
+
+            coordinates = []
+            if stream[i]['tweet']['geolocation']['user_cities']:
+                coordinates.append([stream[i]['tweet']['geolocation']['user_cities'][0]])
+                coordinates.append([stream[i]['tweet']['geolocation']['user_cities'][1]])
+                if stream[i]['tweet']['id_str'] not in tweet_feed.id_str.values:
+                    tweet_feed.loc[len(tweet_feed) + i] = [stream[i]['tweet']['id_str'],
+                                                           stream[i]['tweet']['created_at'],
+                                                           stream[i]['tweet']['user']['name'],
+                                                           stream[i]['tweet']['text'],
+                                                           stream[i]['label'],
+                                                           coordinates,
+
+                                                           ]
     return tweet_feed.to_dict('records')
 
 

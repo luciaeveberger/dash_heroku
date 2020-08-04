@@ -56,7 +56,8 @@ def generate_control_card():
             html.Br(),
             html.Br(),
             html.Button(id='submit-button', n_clicks=0, children='Submit'),
-            html.Button(id="reset-btn", children="Reset", n_clicks=0),
+            html.A(html.Button(id="reset-btn", children="Reset", n_clicks=0),
+                   href='/'),
 
             html.Br(),
             html.Br(),

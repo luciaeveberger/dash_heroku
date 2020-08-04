@@ -45,7 +45,7 @@ def update_output(n_clicks, input1):
         #                              json=dict_json)
 
         clear_data()
-        #time.sleep(1)
+        time.sleep(1)
 
         # if start_stream.status_code == 200:
         return 'streaming on {}'.format(input1)

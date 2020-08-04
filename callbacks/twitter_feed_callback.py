@@ -113,8 +113,6 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         lonInitial = -73.991251
         zoom = 0
     bearing = 0
-    
-
     parsed_data = []
     for value in data:
         parsed_data += [
@@ -125,20 +123,28 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
                 hoverinfo="text",
                 text=value['text'],
                 showlegend=False,
+                name=value['label'],
+                legendgroup=value['label'],
                 marker=dict(
                     showscale=False,
                     size=5,
                     color=LABELS.get(value['label']),
                 ),
+
             )
         ]
+
+    for key in LABELS.keys():
+        parsed_data.append(go.Scatter(x=[None], y=[None], mode='markers',
+                           marker=dict(size=5, color=LABELS[key]),
+                           legendgroup=key, showlegend=True, name=key))
 
     figure = go.Figure(
         data=parsed_data,
         layout=go.Layout(
             autosize=True,
             margin=go.layout.Margin(l=0, r=0, t=0, b=0),
-            showlegend=False,
+            showlegend=True,
             mapbox=dict(
                 accesstoken=MAPBOX_ACCESS_TOKEN,
                 center=dict(lat=lat_initial, lon=lonInitial),  # 40.7272  # -73.991251
@@ -181,6 +187,11 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
             ],
         ),
     )
+    figure.update_layout(legend=dict(bordercolor='rgb(100,100,100)',
+                                  borderwidth=1,
+                                  itemclick='toggleothers',
+                                  x=0.78,
+                                  y=1))
 
     tblcols = [{'name': 'id_str', 'id': 'id_str'},
                {'name': 'received at', 'id': 'received_at'},

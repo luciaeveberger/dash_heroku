@@ -66,25 +66,25 @@ def get_streaming_data(prev_filter_term, curr_filter_term):
                                                            stream[i]['tweet']['text'],
                                                            stream[i]['label'],
                                                            coordinates]
-                    parsed_data += [
-                        go.Scattermapbox(
-                            lat=coordinates[0],
-                            lon=coordinates[1],
-                            mode="markers",
-                            hoverinfo="text",
-                            text=stream[i]['tweet']['text'],
-                            showlegend=False,
-                            marker=dict(
-                                showscale=False,
-                                size=5,
-                                color=LABELS.get(stream[i]['label']),
-                            ),
-                        )
-                    ]
+                    # parsed_data += [
+                    #     go.Scattermapbox(
+                    #         lat=coordinates[0],
+                    #         lon=coordinates[1],
+                    #         mode="markers",
+                    #         hoverinfo="text",
+                    #         text=stream[i]['tweet']['text'],
+                    #         showlegend=False,
+                    #         marker=dict(
+                    #             showscale=False,
+                    #             size=5,
+                    #             color=LABELS.get(stream[i]['label']),
+                    #         ),
+                    #     )
+                    # ]
                                                            
 
 
-    return tweet_feed.to_dict('records'), parsed_data
+    return tweet_feed.to_dict('records')
 
 
 @app.callback(
@@ -101,10 +101,9 @@ def get_streaming_data(prev_filter_term, curr_filter_term):
 )
 def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previous_filter_term):
     if nclicks > 0:
-        data, parsed_data = get_streaming_data(current_filter_term, previous_filter_term)
+        data = get_streaming_data(current_filter_term, previous_filter_term)
     else:
         data = []
-        parsed_data = []
     try:
         lat_initial = (relayoutData['mapbox.center']['lat'])
         lonInitial = (relayoutData['mapbox.center']['lon'])
@@ -114,6 +113,25 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         lonInitial = -73.991251
         zoom = 0
     bearing = 0
+    
+
+    parsed_data = []
+    for value in data:
+        parsed_data += [
+            go.Scattermapbox(
+                lat=value['user_city'][0],
+                lon=value['user_city'][1],
+                mode="markers",
+                hoverinfo="text",
+                text=value['text'],
+                showlegend=False,
+                marker=dict(
+                    showscale=False,
+                    size=5,
+                    color=LABELS.get(value['label']),
+                ),
+            )
+        ]
 
     figure = go.Figure(
         data=parsed_data,

@@ -41,16 +41,16 @@ def switch_tab(at):
 def update_output(n_clicks, input1):
     if n_clicks > 0:
         dict_json = {"stream_name": input1}
-        start_stream = requests.post(os.path.join(API_HOSTNAME, 'get_tweets/'),
-                                     json=dict_json)
+        # start_stream = requests.post(os.path.join(API_HOSTNAME, 'get_tweets/'),
+        #                              json=dict_json)
 
         clear_data()
-        time.sleep(1)
+        #time.sleep(1)
 
-        if start_stream.status_code == 200:
-            return 'streaming on {}'.format(input1)
-        else:
-            return 'failed to connect to twitter stream'
+        # if start_stream.status_code == 200:
+        return 'streaming on {}'.format(input1)
+        # else:
+        #     return 'failed to connect to twitter stream'
 
 @app.callback(Output('reset-state', 'children'),
               [Input('reset-btn', 'n_clicks')],

@@ -8,7 +8,7 @@ from settings import API_HOSTNAME
 from plotly import graph_objs as go
 from settings import MAPBOX_ACCESS_TOKEN
 
-
+from components.input_labels import LABELS
 import plotly.express as px
 
 HEATWAVE_DATA = "DUMMY_DATA/heatwave.json"
@@ -18,16 +18,6 @@ WILDFIRE_DATA = "DUMMY_DATA/wildfire.json"
 colours = px.colors.sequential.Plasma
 tweet_feed = pd.DataFrame(columns=['id_str', 'received_at', 'user', 'text', 'label', 'user_city'])
 
-LABELS = {
-    "affected_people": "#845EC2",
-    "other_useful_information": "#5EC297",
-    "disease_transmission": "#57B8F9",
-    "disease_signs_or_symptoms":"#FF9671",
-    "prevention":"#0083C0",
-    "treatment":"#9E2A9B",
-    "not_related_or_irrelevant": "#96B1AB",
-    "deaths_reports":"#CF6346",
-}
 
 
 def clear_data():
@@ -100,20 +90,19 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         series_histogram = series_histogram.to_frame()
         series_histogram['count'] = series_histogram.index
 
-        colors = [] 
         for key in LABELS.keys():
             parsed_data.append(go.Scatter(x=[None], y=[None], mode='markers',
-                           marker=dict(size=10, color=LABELS[key]),
-                           legendgroup=key, showlegend=True, name=key))
+                                          marker=dict(size=10, color=LABELS[key]),
+                                          legendgroup=key, showlegend=True, name=key))
 
             if key not in series_histogram['label']:
-                series_histogram.loc[len(series_histogram)+1] = [0, key]
+                series_histogram.loc[len(series_histogram) + 1] = [0, key]
 
         series_histogram['colors'] = series_histogram['count'].map(LABELS)
-        fig = go.Figure([go.Bar(x=series_histogram['count'], 
-            y=series_histogram['label'], 
-            marker={'color': series_histogram['colors']})])
-        
+        fig = go.Figure([go.Bar(x=series_histogram['count'],
+                                y=series_histogram['label'],
+                                marker={'color': series_histogram['colors']})])
+
     else:
         data = []
         series_histogram = []
@@ -128,7 +117,6 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         zoom = 0
 
     bearing = 0
-    
     for value in data:
         parsed_data += [
             go.Scattermapbox(
@@ -149,13 +137,13 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
             )
         ]
 
-
     figure = go.Figure(
         data=parsed_data,
         layout=go.Layout(
             autosize=True,
             margin=go.layout.Margin(l=0, r=0, t=0, b=0),
             showlegend=True,
+            height=550,
             mapbox=dict(
                 accesstoken=MAPBOX_ACCESS_TOKEN,
                 center=dict(lat=lat_initial, lon=lonInitial),  # 40.7272  # -73.991251
@@ -198,11 +186,13 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
             ],
         ),
     )
-    figure.update_layout(legend=dict(bordercolor='rgb(100,100,100)', 
-                                  borderwidth=1,
-                                  itemclick='toggleothers',
-                                  x=0.78,
-                                  y=0))
+    figure.update_layout(legend=dict(
+                                     itemclick='toggleothers',
+                                      orientation="v",
+                                      yanchor="bottom",
+                                      y=0,
+                                      xanchor="right",
+                                      x=1))
 
     tblcols = [{'name': 'id_str', 'id': 'id_str'},
                {'name': 'received at', 'id': 'received_at'},
@@ -211,6 +201,5 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
                {'name': 'label', 'id': 'label'},
                {'name': 'city', 'id': 'city'},
                ]
-
 
     return figure, data, tblcols, fig

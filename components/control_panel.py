@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from datetime import datetime as dt
 
-type_of_models = ['UNSUPERVISED', 'SUPERVISED']
+type_of_models = ['SUPERVISED', 'UNSUPERVISED']
 filter_streams = ['covid', 'trump', 'other']
 languages = ['en', 'fr', 'de']
 today = dt.today()

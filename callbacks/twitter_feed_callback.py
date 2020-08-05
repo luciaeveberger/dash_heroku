@@ -13,6 +13,7 @@ import plotly.express as px
 
 HEATWAVE_DATA = "DUMMY_DATA/heatwave.json"
 ARCTIC_DATA = "DUMMY_DATA/arctic.json"
+WILDFIRE_DATA = "DUMMY_DATA/wildfire.json"
 
 colours = px.colors.sequential.Plasma
 tweet_feed = pd.DataFrame(columns=['id_str', 'received_at', 'user', 'text', 'label', 'user_city'])
@@ -47,6 +48,9 @@ def get_streaming_data(prev_filter_term, curr_filter_term):
 
     if curr_filter_term == 'arctic':
         DATA = ARCTIC_DATA
+
+    if curr_filter_term == 'wildfire':
+        DATA = WILDFIRE_DATA
 
     parsed_data = []
     with open(os.path.join(cwd, DATA)) as f:

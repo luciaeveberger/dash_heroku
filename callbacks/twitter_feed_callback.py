@@ -19,14 +19,14 @@ colours = px.colors.sequential.Plasma
 tweet_feed = pd.DataFrame(columns=['id_str', 'received_at', 'user', 'text', 'label', 'user_city'])
 
 LABELS = {
-    "affected_people": "#F4EC15",
-    "other_useful_information": "#1f77b4",
-    "disease_transmission": "#BBEC19",
-    "disease_signs_or_symptoms":"#9DE81B",
-    "prevention":"#80E41D",
-    "treatment":"#66E01F",
-    "not_related_or_irrelevant": "#4CDC20",
-    "deaths_reports":"#34D822",
+    "affected_people": "#845EC2",
+    "other_useful_information": "#5EC297",
+    "disease_transmission": "#57B8F9",
+    "disease_signs_or_symptoms":"#FF9671",
+    "prevention":"#0083C0",
+    "treatment":"#9E2A9B",
+    "not_related_or_irrelevant": "#96B1AB",
+    "deaths_reports":"#CF6346",
 }
 
 
@@ -103,7 +103,7 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         colors = [] 
         for key in LABELS.keys():
             parsed_data.append(go.Scatter(x=[None], y=[None], mode='markers',
-                           marker=dict(size=5, color=LABELS[key]),
+                           marker=dict(size=10, color=LABELS[key]),
                            legendgroup=key, showlegend=True, name=key))
 
             if key not in series_histogram['label']:

@@ -1,15 +1,19 @@
 import dash_html_components as html
+from components.control_panel import generate_control_card,generate_historical_search, description_card
+import dash_core_components as dcc
+import numpy as np
+import plotly.express as px
+
 
 analysis_tab = html.Div(
-    id="app-container",
     children=[
-        # Banner
         html.Div(
-            id="right-column",
-            className="nine columns",
+            children=[
+                dcc.Graph(id="bar-chart", style={"width" : "100%"}),
+                html.Hr(),
+                html.Hr(),
+                ]
         ),
-        html.Div(
-            id="left-column",
-            className="three columns",)
-        ]
+
+    ],
 )

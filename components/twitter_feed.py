@@ -3,6 +3,7 @@ from dash_table import DataTable
 
 twitter_feed = html.Div([
     html.Div(
+        
         id="patient_volume_card",
         children=[
             html.Hr(),

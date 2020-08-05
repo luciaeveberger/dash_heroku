@@ -22,18 +22,6 @@ def toggle_container(toggle_value):
         return {'display': 'none'}
 
 
-# tabs
-@app.callback(Output("content", "children"),
-              [Input("tabs", "active_tab")])
-def switch_tab(at):
-    #@todo: figure out if necessary
-    if at == "tab-1":
-        return world_map_tab
-    elif at == "tab-2":
-        return analysis_tab
-    elif at == "tab-3":
-        return tweet_search_tab
-
 
 @app.callback(Output('output-state', 'children'),
               [Input('submit-button', 'n_clicks')],

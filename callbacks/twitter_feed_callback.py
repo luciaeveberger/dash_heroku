@@ -8,6 +8,7 @@ from settings import API_HOSTNAME
 from plotly import graph_objs as go
 from settings import MAPBOX_ACCESS_TOKEN
 
+
 import plotly.express as px
 
 HEATWAVE_DATA = "DUMMY_DATA/heatwave.json"
@@ -66,31 +67,20 @@ def get_streaming_data(prev_filter_term, curr_filter_term):
                                                            stream[i]['tweet']['text'],
                                                            stream[i]['label'],
                                                            coordinates]
-                    # parsed_data += [
-                    #     go.Scattermapbox(
-                    #         lat=coordinates[0],
-                    #         lon=coordinates[1],
-                    #         mode="markers",
-                    #         hoverinfo="text",
-                    #         text=stream[i]['tweet']['text'],
-                    #         showlegend=False,
-                    #         marker=dict(
-                    #             showscale=False,
-                    #             size=5,
-                    #             color=LABELS.get(stream[i]['label']),
-                    #         ),
-                    #     )
-                    # ]
-                                                           
+                                            
 
 
-    return tweet_feed.to_dict('records')
+    series_histogram = tweet_feed['label'].value_counts()
+
+    return tweet_feed.to_dict('records'), series_histogram
 
 
 @app.callback(
     [Output("map-graph", "figure"),
      Output("table", "data"),
-     Output('table', 'columns')],
+     Output('table', 'columns'),
+     Output("bar-chart", "figure")
+     ],
     [
         Input("interval-component", "n_intervals"),
         Input("filter_terms", "value"),
@@ -100,10 +90,30 @@ def get_streaming_data(prev_filter_term, curr_filter_term):
      State('filter_terms', 'value')],
 )
 def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previous_filter_term):
+    parsed_data = []
     if nclicks > 0:
-        data = get_streaming_data(current_filter_term, previous_filter_term)
+        data, series_histogram = get_streaming_data(current_filter_term, previous_filter_term)
+        series_histogram = series_histogram.to_frame()
+        series_histogram['count'] = series_histogram.index
+
+        colors = [] 
+        for key in LABELS.keys():
+            parsed_data.append(go.Scatter(x=[None], y=[None], mode='markers',
+                           marker=dict(size=5, color=LABELS[key]),
+                           legendgroup=key, showlegend=True, name=key))
+
+            if key not in series_histogram['label']:
+                series_histogram.loc[len(series_histogram)+1] = [0, key]
+
+        series_histogram['colors'] = series_histogram['count'].map(LABELS)
+        fig = go.Figure([go.Bar(x=series_histogram['count'], 
+            y=series_histogram['label'], 
+            marker={'color': series_histogram['colors']})])
+        
     else:
         data = []
+        series_histogram = []
+        fig = px.bar()
     try:
         lat_initial = (relayoutData['mapbox.center']['lat'])
         lonInitial = (relayoutData['mapbox.center']['lon'])
@@ -112,8 +122,9 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
         lat_initial = 40.7272
         lonInitial = -73.991251
         zoom = 0
+
     bearing = 0
-    parsed_data = []
+    
     for value in data:
         parsed_data += [
             go.Scattermapbox(
@@ -134,10 +145,6 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
             )
         ]
 
-    for key in LABELS.keys():
-        parsed_data.append(go.Scatter(x=[None], y=[None], mode='markers',
-                           marker=dict(size=5, color=LABELS[key]),
-                           legendgroup=key, showlegend=True, name=key))
 
     figure = go.Figure(
         data=parsed_data,
@@ -187,11 +194,11 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
             ],
         ),
     )
-    figure.update_layout(legend=dict(bordercolor='rgb(100,100,100)',
+    figure.update_layout(legend=dict(bordercolor='rgb(100,100,100)', 
                                   borderwidth=1,
                                   itemclick='toggleothers',
                                   x=0.78,
-                                  y=1))
+                                  y=0))
 
     tblcols = [{'name': 'id_str', 'id': 'id_str'},
                {'name': 'received at', 'id': 'received_at'},
@@ -200,4 +207,6 @@ def update_graph(n_intervals, current_filter_term, nclicks, relayoutData, previo
                {'name': 'label', 'id': 'label'},
                {'name': 'city', 'id': 'city'},
                ]
-    return figure, data, tblcols
+
+
+    return figure, data, tblcols, fig

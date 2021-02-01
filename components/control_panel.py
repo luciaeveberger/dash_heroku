@@ -80,7 +80,7 @@ def generate_historical_search():
             html.Br(),
             dcc.DatePickerRange(
                 id="date-picker-select",
-                start_date=dt(today.year, today.month, today.day - 1),
+                start_date=dt(today.year, today.month, today.day),
                 end_date=dt(today.year, today.month, today.day),
                 min_date_allowed=dt(2014, 1, 1),
                 max_date_allowed=dt(today.year, today.month, today.day),

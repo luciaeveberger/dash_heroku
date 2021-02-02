@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from datetime import datetime as dt
 
 type_of_models = ['SUPERVISED', 'UNSUPERVISED']
-filter_streams = ['covid', 'trump', 'other']
+filter_streams = ['arctic', 'heatwave', 'wildfire']
 languages = ['en', 'fr', 'de']
 today = dt.today()
 
@@ -52,7 +52,12 @@ def generate_control_card():
                 value=type_of_models[0],
             ),
             html.P("Filter stream"),
-            dcc.Input(id='filter_terms', type='text', placeholder='Search Words'),
+              dcc.Dropdown(
+                id="filter_terms",
+                options=[{"label": i, "value": i} for i in filter_streams],
+                value=filter_streams[0],
+            ),
+            #dcc.Input(id='filter_terms', type='text', placeholder='Search Words'),
             html.Br(),
             html.Br(),
             html.Button(id='submit-button', n_clicks=0, children='Submit'),
